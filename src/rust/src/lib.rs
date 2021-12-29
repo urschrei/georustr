@@ -1,5 +1,5 @@
-use std::fs::File;
 use std::io::BufWriter;
+use std::{fs::File, str::from_utf8};
 
 use extendr_api::prelude::*;
 use geojson::{Feature, FeatureCollection, Value};
@@ -16,11 +16,17 @@ fn hello_world() -> &'static str {
 pub fn csv_to_geojson_rust() {
     let mut points = Vec::new();
     let mut reader = csv::Reader::from_path("points.csv").unwrap();
-    let mut record = csv::StringRecord::new();
-    while reader.read_record(&mut record).unwrap() {
+    let mut record = csv::ByteRecord::new();
+    while reader.read_byte_record(&mut record).unwrap() {
         points.push(Feature::from(Value::Point(vec![
-            record[0].parse::<f64>().unwrap(),
-            record[1].parse::<f64>().unwrap(),
+            from_utf8(record.get(0).unwrap())
+                .unwrap()
+                .parse::<f64>()
+                .unwrap(),
+            from_utf8(record.get(1).unwrap())
+                .unwrap()
+                .parse::<f64>()
+                .unwrap(),
         ])));
     }
     let fc = FeatureCollection {
