@@ -14,18 +14,15 @@ fn hello_world() -> &'static str {
 /// @export
 #[extendr]
 pub fn csv_to_geojson_rust() {
+    let mut points = Vec::new();
     let mut reader = csv::Reader::from_path("points.csv").unwrap();
-    let points = reader
-        .records()
-        // this will silently discard invalid / unparseable records
-        .filter_map(|record| record.ok())
-        .map(|record| {
-            Feature::from(Value::Point(vec![
-                record[0].parse::<f64>().unwrap(),
-                record[1].parse::<f64>().unwrap(),
-            ]))
-        })
-        .collect();
+    let mut record = csv::StringRecord::new();
+    while reader.read_record(&mut record).unwrap() {
+        points.push(Feature::from(Value::Point(vec![
+            record[0].parse::<f64>().unwrap(),
+            record[1].parse::<f64>().unwrap(),
+        ])));
+    }
     let fc: FeatureCollection = FeatureCollection {
         bbox: None,
         features: points,
