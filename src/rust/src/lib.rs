@@ -23,7 +23,7 @@ pub fn csv_to_geojson_rust() {
             record[1].parse::<f64>().unwrap(),
         ])));
     }
-    let fc: FeatureCollection = FeatureCollection {
+    let fc = FeatureCollection {
         bbox: None,
         features: points,
         foreign_members: None,
